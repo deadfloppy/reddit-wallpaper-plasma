@@ -2,6 +2,7 @@
  *  Copyright 2013 Marco Martin <mart@kde.org>
  *  Copyright 2014 Sebastian Kügler <sebas@kde.org>
  *  Copyright 2014 Kai Uwe Broulik <kde@privat.broulik.de>
+ *  Copyright 2022 Kyle Paulsen <kyle.a.paulsen@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,13 +20,11 @@
  */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.1 as QQC2
+import QtQuick.Controls 2.1
 import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
-import org.kde.plasma.wallpapers.image 2.0 as Wallpaper
-import org.kde.plasma.core 2.0 as PlasmaCore
 
-QQC2.StackView {
+StackView {
     id: root
 
     readonly property bool refetchSignal: wallpaper.configuration.RefetchSignal
@@ -124,7 +123,7 @@ QQC2.StackView {
         function replaceWhenLoaded() {
             if (pendingImage.status !== Image.Loading) {
                 root.replace(pendingImage, {},
-                    isFirst ? QQC2.StackView.Immediate : QQC2.StackView.Transition); // don't animate first show
+                    isFirst ? StackView.Immediate : StackView.Transition); // don't animate first show
                 pendingImage.statusChanged.disconnect(replaceWhenLoaded);
             }
         }
@@ -241,8 +240,10 @@ QQC2.StackView {
             }
             log("using image: " + url);
             root.currentUrl = url;
-            root.currentMessage = imageObj.data.title;
+            root.currentMessage = `${imageObj.data.subreddit_name_prefixed} - ${imageObj.data.title}`;
             root.hasError = false;
+            wallpaper.configuration.currentWallpaperLink = `https://www.reddit.com${imageObj.data.permalink}`;
+            wallpaper.configuration.currentWallpaperText = root.currentMessage;
             errorTimerDelay = 20000;
             retryOnErrorTimer.stop();
             loadImage();
@@ -274,7 +275,7 @@ QQC2.StackView {
             autoTransform: true
             z: -1
 
-            QQC2.StackView.onRemoved: destroy()
+            StackView.onRemoved: destroy()
 
             Rectangle {
                 id: backgroundColor
@@ -311,7 +312,7 @@ QQC2.StackView {
                     }
                 }
             }
-            QQC2.Label {
+            Label {
                 id: imageTitle
                 color: "white"
                 width: root.width * Screen.devicePixelRatio - 100
