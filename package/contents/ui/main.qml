@@ -39,6 +39,7 @@ StackView {
     readonly property bool showPostTitle: wallpaper.configuration.ShowPostTitle
     readonly property bool allowNSFW: wallpaper.configuration.AllowNSFW
     readonly property int wallpaperDelay: wallpaper.configuration.WallpaperDelay
+    readonly property int wallpaperLimit: wallpaper.configuration.WallpaperLimit
     property int errorTimerDelay: 5000
     property string currentUrl: "blackscreen.jpg"
     property string currentMessage: ""
@@ -101,6 +102,10 @@ StackView {
         log("delay changed in main " + wallpaperDelay);
         myTimer.restart();
     }
+    onWallpaperLimitChanged: {
+        log("limit changed in main " + wallpaperLimit);
+        myTimer.restart();
+    }
 
     function log(...args) {
         console.log("reddit wallpaper:", ...args);
@@ -149,7 +154,7 @@ StackView {
     function fetchRedditData(sub) {
         log("fetching new wallpaper! Using sub: " + sub);
         return new Promise((res, rej) => {
-            const url = `https://www.reddit.com/r/${sub}/${subredditSection}.json?sort=top&t=${subredditSectionTime}&limit=100`;
+            const url = `https://www.reddit.com/r/${sub}/${subredditSection}.json?sort=top&t=${subredditSectionTime}&limit=${wallpaperLimit || 100}`;
             log('using url: ' + url);
             const xhr = new XMLHttpRequest();
             xhr.onload = () => {

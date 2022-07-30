@@ -30,6 +30,7 @@ Kirigami.ScrollablePage {
     property int cfg_FillMode
     property alias cfg_Blur: blurRadioButton.checked
     property int cfg_WallpaperDelay: 60
+    property int cfg_WallpaperLimit: 100
     property string cfg_Subreddit: "earthporn wallpaper"
     property string cfg_SubredditSection
     property string cfg_SubredditSectionTime
@@ -200,7 +201,7 @@ Kirigami.ScrollablePage {
 
         ComboBox {
             id: preferOrientationDropdown
-            Kirigami.FormData.label: i18n("Prefer Image Orientation:")
+            Kirigami.FormData.label: i18n("Prefer image orientation:")
             model: [
                 {
                     'label': i18n("Any"),
@@ -231,15 +232,26 @@ Kirigami.ScrollablePage {
             id: delaySpinBox
             value: cfg_WallpaperDelay
             onValueChanged: cfg_WallpaperDelay = value
-            Kirigami.FormData.label: i18n("Wallpaper Timer (min):")
+            Kirigami.FormData.label: i18n("Wallpaper timer (min):")
             stepSize: 1
             from: 1
             to: 50000
             editable: true
         }
 
+        SpinBox {
+            id: limitSpinBox
+            value: cfg_WallpaperLimit
+            onValueChanged: cfg_WallpaperLimit = value
+            Kirigami.FormData.label: i18n("Limit results to:")
+            stepSize: 1
+            from: 1
+            to: 100
+            editable: true
+        }
+
         CheckBox {
-            Kirigami.FormData.label: i18n("Show Post Title:")
+            Kirigami.FormData.label: i18n("Show post title:")
             checked: cfg_ShowPostTitle
             onToggled: {
                 cfg_ShowPostTitle = checked;
