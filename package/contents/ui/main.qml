@@ -39,7 +39,7 @@ StackView {
     readonly property bool showPostTitle: wallpaper.configuration.ShowPostTitle
     readonly property bool allowNSFW: wallpaper.configuration.AllowNSFW
     readonly property int wallpaperDelay: wallpaper.configuration.WallpaperDelay
-    property int errorTimerDelay: 20000
+    property int errorTimerDelay: 5000
     property string currentUrl: "blackscreen.jpg"
     property string currentMessage: ""
     property string lastSubreddit: ""
@@ -154,7 +154,7 @@ StackView {
             const xhr = new XMLHttpRequest();
             xhr.onload = () => {
                 if (!xhr.responseText) {;
-                    return rej("connection failed");
+                    return rej("request failed");
                 }
                 let data = {};
                 try {
@@ -163,6 +163,9 @@ StackView {
                     return rej("couldnt parse json");
                 }
                 res(data);
+            };
+            xhr.onerror = () => {
+                rej("Connection failed. No internet?");
             };
             xhr.open('GET', url);
             xhr.setRequestHeader('User-Agent','reddit-wallpaper-kde-plugin');
@@ -244,7 +247,7 @@ StackView {
             root.hasError = false;
             wallpaper.configuration.currentWallpaperLink = `https://www.reddit.com${imageObj.data.permalink}`;
             wallpaper.configuration.currentWallpaperText = root.currentMessage;
-            errorTimerDelay = 20000;
+            errorTimerDelay = 5000;
             retryOnErrorTimer.stop();
             loadImage();
         } else {
@@ -258,7 +261,7 @@ StackView {
         root.currentUrl = "blackscreen.jpg";
         root.currentMessage = msg;
         root.hasError = true;
-        errorTimerDelay *= 1.5;
+        errorTimerDelay = Math.min(errorTimerDelay * 1.5, 3600000);
         retryOnErrorTimer.start();
     }
 
