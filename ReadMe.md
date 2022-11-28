@@ -1,4 +1,5 @@
 Plasma Reddit Wallpaper plugin
+This fork is modified to only output images with resolution 3840x*
 
 In config :
 

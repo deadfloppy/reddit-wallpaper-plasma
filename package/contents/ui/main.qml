@@ -176,9 +176,10 @@ StackView {
             xhr.setRequestHeader('User-Agent','reddit-wallpaper-kde-plugin');
             xhr.timeout = 15000;
             xhr.send();
+            log('fetchRedditData Success');
         });
     }
-
+    // Get imageData
     function get(obj, path, def) {
         const pathParts = path.split('.');
         let current = obj;
@@ -208,17 +209,19 @@ StackView {
             return allowed && (allowNSFW || !data.over_18);
         });
         let filteredImages = preFilteredImages;
-        if (preferOrientation === 'landscape') {
-            filteredImages = filteredImages.filter(c => {
+        filteredImages = filteredImages.filter(c => {
                 const imageInfo = get(c, 'data.preview.images.0.source');
-                return imageInfo && imageInfo.width >= imageInfo.height;
-            });
-        } else if (preferOrientation === 'portrait') {
-            filteredImages = filteredImages.filter(c => {
-                const imageInfo = get(c, 'data.preview.images.0.source');
-                return imageInfo && imageInfo.width <= imageInfo.height;
-            });
-        }
+                if (imageInfo !== undefined) {
+                    if (preferOrientation === 'portrait') {
+                        return imageInfo && imageInfo.width <= imageInfo.height;
+                    }
+                    else if (preferOrientation === 'landscape') {
+                        if (imageInfo.width == 3840) {
+                            return imageInfo && imageInfo.width >= imageInfo.height;
+                        }
+                    }
+                }
+        })
         if (filteredImages.length === 0) {
             filteredImages = preFilteredImages;
         }
@@ -233,6 +236,7 @@ StackView {
             loadImage();
             return;
         }
+        //TODO: log('swag');
         let filteredImages = filterImages(allImages);
         if (filteredImages.length === 0) {
             setError("No images found. Bad subreddit? Only NSFW?");
